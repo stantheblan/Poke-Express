@@ -17,5 +17,11 @@
   "bugs": {
     "url": "https://github.com/stantheblan/Poke-Express/issues"
   },
-  "homepage": "https://github.com/stantheblan/Poke-Express#readme"
+  "homepage": "https://github.com/stantheblan/Poke-Express#readme",
+  "dependencies": {
+    "express": "^4.17.3",
+    "express-react-views": "^0.11.0",
+    "react": "^16.14.0",
+    "react-dom": "^16.14.0"
+  }
 }
