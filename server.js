@@ -25,7 +25,7 @@ app.get('/pokemon/seed/', (req, res) => {
 }) 
 
 app.get('/', (req, res) => {
-    res.send('Welcome to the Pokemon App!')
+    res.send("Welcome to the <a href='/pokemon'>Pokemon</a> App!")
 })
 
 app.get('/pokemon', (req, res) => {
