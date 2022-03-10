@@ -1,7 +1,11 @@
+require('dotenv').config()
 const express = require('express')
-const pokemon = require('./models/pokemon')
+const mongoose = require('mongoose')
+const pokemon = require('./models/pokemon.js')
 const app = express()
-const port = 3000
+const PORT = process.env.PORT || 3001;
+
+app.use(express.urlencoded({extended:true}))
 
 app.set('view engine', 'jsx')
 app.engine('jsx', require('express-react-views').createEngine())
@@ -11,11 +15,36 @@ app.get('/', (req, res) => {
 })
 
 app.get('/pokemon', (req, res) => {
-    res.render('Index', {pokemon: pokemon})
-}) 
+    // res.render('Index', {pokemon: pokemon})
+    pokemon.find({}, (error, allPoke) => {
+        res.render('Index', {
+          pokemon: allPoke
+        })
+})}) 
 
-app.get('/pokemon/:id', (req, res) => {
-    res.render('Show', {pokemon: pokemon[req.params.id]})
+app.get('/pokemon/new', (req, res) => {
+    res.render('new')
 })
 
-app.listen(port, () => console.log(`Listening on port: ${port}`)) 
+app.get('/pokemon/:id', (req, res) => {
+    
+    pokemon.findById(req.params.id, (er, foundPoke) => {
+        res.render('Show', {pokemon: foundPoke})
+    })
+})
+
+app.post('/pokemon/', (req, res)=>{
+    pokemon.create(req.body, (error, createdPoke)=>{
+      res.redirect('/pokemon')
+    })
+    console.log(pokemon)
+    console.log(req.body)
+})
+
+//connect to mongo database
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connection.once('open', ()=> {
+    console.log('connected to mongo')
+})
+
+app.listen(PORT, () => console.log(`Listening on port: ${PORT}`)) 
