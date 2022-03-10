@@ -1,13 +1,13 @@
 require('dotenv').config()
+const mOR = require('method-override')
 const express = require('express')
 const mongoose = require('mongoose')
 const pokemon = require('./models/pokemon.js')
 const app = express()
 const PORT = process.env.PORT || 3001;
 
-// deploy to heroku =============================================
-
 app.use(express.urlencoded({extended:true}))
+app.use(mOR('_method'))
 
 app.set('view engine', 'jsx')
 app.engine('jsx', require('express-react-views').createEngine())
@@ -40,21 +40,41 @@ app.get('/pokemon', (req, res) => {
 app.get('/pokemon/new', (req, res) => {
     res.render('new')
 })
-
-app.get('/pokemon/:id', (req, res) => {
-    
-    pokemon.findById(req.params.id, (er, foundPoke) => {
-        res.render('Show', {pokemon: foundPoke})
-    })
-})
-
 app.post('/pokemon/', (req, res)=>{
     pokemon.create(req.body, (error, createdPoke)=>{
       res.redirect('/pokemon')
     })
-    console.log(pokemon)
-    console.log(req.body)
 })
+
+
+app.get('/pokemon/:id', (req, res) => {
+    pokemon.findById(req.params.id, (er, foundPoke) => {
+        res.render('Show', {pokemon: foundPoke})
+    })
+})
+app.delete('/pokemon/:id/', (req, res) => {
+    pokemon.findByIdAndRemove(req.params.id, (er, foundPoke) => {
+        res.redirect('/pokemon')
+    })
+})
+
+app.get('/pokemon/:id/edit', (req, res) => {
+    pokemon.findById(req.params.id, (er, foundPoke) => {
+        if (!er)
+        {
+            res.render('Edit', {pokemon: foundPoke})
+        }        
+    })
+})
+
+app.put('/pokemon/:id/', (req, res)=>{
+    pokemon.findByIdAndUpdate(req.params.id, req.body, {new:true}, (er, data)=>{
+      res.redirect('/pokemon')
+    })
+})
+
+
+
 
 //connect to mongo database
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
